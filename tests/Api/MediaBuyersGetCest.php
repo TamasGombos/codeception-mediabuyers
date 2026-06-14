@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Api;
 
 use Tests\Support\ApiTester;
+use Tests\Support\Helper\MediaBuyersGetHelper;
 
 final class MediaBuyersGetCest
 {
@@ -16,16 +17,14 @@ final class MediaBuyersGetCest
     public function apiReturnsAValidJsonAgainstSchema(ApiTester $I): void
     {
         $I->sendGet('/api/mediabuyers');
-        $I->seeResponseCodeIs(200);
-        $I->seeHttpHeader('Content-Type', 'application/json; charset=utf-8');
-        $I->seeResponseContainsJson(array('data' => []));
+        $I->validateResponseFormat();
         $I->validateResponseJsonSchema('get');
     }
 
-    public function apiReturnsValidDataInFieldsNotSpecifiedBySchema(ApiTester $I): void
+    public function apiReturnsValidDataInFieldsNotSpecifiedBySchema(ApiTester $I, MediaBuyersGetHelper $M): void
     {
         $response = $I->sendGet('/api/mediabuyers');
-        $I->validateResponseValues($response);
-        $I->validateIdUniqueness($response);
+        $M->validateResponseValues($response);
+        $M->validateIdUniqueness($response);
     }
 }

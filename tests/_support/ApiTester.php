@@ -11,6 +11,9 @@ class ApiTester extends \Codeception\Actor
     use _generated\ApiTesterActions;
     use Asserts;
 
+    /**
+     * Sets up 'X-API-Key', 'Accept' and 'Content-Type' headers for all API calls
+     */
     public function setUpApiHeaders()
     {
         $this->haveHttpHeader('X-API-Key', $_ENV['API_KEY']);
@@ -18,6 +21,9 @@ class ApiTester extends \Codeception\Actor
         $this->haveHttpHeader('Content-Type', 'application/json');
     }
 
+    /**
+     * Checks for HTTP 200 status code, 'Content-Type' header, and the existence of 'data' object
+     */
     public function validateResponseFormat()
     {
         $this->seeResponseCodeIs(200);
@@ -25,13 +31,23 @@ class ApiTester extends \Codeception\Actor
         $this->seeResponseContainsJson(array('data' => []));
     }
 
-    public function validateErrorResponseFormat()
+    /**
+     * Checks for HTTP $statusCode status code, 'Content-Type' header, and the existence of 'errors' object
+     *
+     * @param int $statusCode The expected status code
+     */
+    public function validateErrorResponseFormat(int $statusCode)
     {
-        $this->seeResponseCodeIs(400);
+        $this->seeResponseCodeIs($statusCode);
         $this->seeHttpHeader('Content-Type', 'application/json; charset=utf-8');
         $this->seeResponseContainsJson(array('errors' => []));
     }
 
+    /**
+     * Validates the JSON schema of the 'GET' or 'POST' $method, based on 'SCHEMA_VERSION' environment variable
+     *
+     * @param string $method The method used for the API call
+     */
     public function validateResponseJsonSchema(string $method)
     {
         if ($method != "get" && $method != "post") {
